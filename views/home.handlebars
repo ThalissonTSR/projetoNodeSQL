@@ -1,0 +1,61 @@
+{{! html a ser exibido }}
+
+<h1>Agendamentos</h1>
+
+<div class="order">
+  <a href="/listaCurso"><button>Ordem/curso</button></a>
+  <a href="/listaSala"><button>Ordem/sala</button></a>
+  <a href="/listaData"><button>Ordem/data</button></a>
+</div>
+{{! each significa (cada), ele cria um bloco para cada conteudo }}
+
+{{#each Curso}}
+  {{!puxa cada item separado para cada item ele criara um bloco abaixo , ex: se tiver 2 itens de titulo ele cria 2 blocos cada um com um titulo seguindo a sequencias dos id ou PK}}
+  <div class="table">
+    {{!bloco curso}}
+    <div class="vertical">
+      <h2>Curso:</h2>
+    </div>
+
+    {{!bloco sala}}
+    <div class="vertical">
+      <h2>Sala:</h2>
+    </div>
+
+    {{!bloco data}}
+    <div class="vertical">
+      <h2>Data:</h2>
+    </div>
+
+    {{!bloco horario}}
+    <h2>Horario:</h2>
+
+    {{!bloco nomeCurso}}
+    <div class="vertical">
+      <p>{{NomeCurso}}</p>
+    </div>
+
+    {{!bloco nomeSala}}
+    <div class="vertical">
+      <p>{{Sala}}</p>
+    </div>
+
+    {{!bloco numdata}}
+    <div class="vertical">
+      <p>{{Data}}</p>
+    </div>
+
+    {{!bloco numHora}}
+    <p>{{Horario}}</p>
+
+    {{!botao de deletar}}
+    <a class="btbDel" href="/deletar/{{id}}"><button>Deletar</button></a>
+    {{!deleta o post dependendo do id, como cria um botao para cada post logo botao1 == id1}}
+
+  </div>
+{{/each}}
+
+{{!botao de criar data}}
+<a class="btnNew" href="/cad"><button>CRIAR MARCAÇÃO</button></a>
+
+<a class="btnCal" href="/eventos"><button>Ver Calendario</button></a>

@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #d0d0d0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px ;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 700px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#calendar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.day {
+    width: 13%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.day strong {
+    display: block;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.event {
+    background-color: #e2e2e2;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+/* Estilo para os botões de navegação */
+.nav-buttons, .btns {
+    display: flex;
+    justify-content: space-evenly;
+    text-align: center;
+    margin-top: 10px;
+    
+}   
+
+.nav-buttons button,.btns button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.nav-buttons button:hover, .add button:hover, .delete button {
+    background-color: #45a049;
+}
+
+
+
+

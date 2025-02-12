@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendário de Cursos</title>
+    <link rel="stylesheet" href="/css/{{style}}">
+</head>
+<body>
+    <div class="container">
+        <h1 id="data"></h1>
+        <div class="nav-buttons">
+            <button id="prevMonth">Anterior</button>
+            <button id="nextMonth">Próximo</button>
+        </div>
+        
+
+        <div id="calendar"></div>
+             <div class="btns">
+                 <a class="add" href="/cad"><button>Adicionar</button></a>
+                 <a class="delete" href="/"><button>Excluir</button></a>
+             </div>
+    </div>
+
+    <!-- Passando os dados dos eventos para o frontend -->
+    <script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        // Variável que contém os eventos passados pelo backend
+        const eventos = JSON.parse('{{{eventos}}}');  // A string JSON passada pelo backend
+
+        console.log(eventos);  // Verificando os dados dos eventos
+
+        // Declarando currentMonth e currentYear fora da função para que sejam acessíveis em todo o script
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Função para gerar o calendário
+        const generateCalendar = () => {
+            const calendar = document.getElementById("calendar");
+            calendar.innerHTML = ""; // Limpa o calendário anterior
+
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Quantos dias no mês atual
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                const dayElement = document.createElement("div");
+                dayElement.className = "day";
+
+                const dayTitle = document.createElement("strong");
+                dayTitle.innerText = `${day}/${currentMonth + 1}/${currentYear}`;
+                dayElement.appendChild(dayTitle);
+
+                // Filtra eventos para este dia
+               const formatarDataParaBR = (data) => {
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+};
+
+const dayEvents = eventos.filter(evento => evento.createdAt === formatarDataParaBR(date));
+
+
+                // Exibir eventos no calendário
+                dayEvents.forEach(evento => {
+                    const eventElement = document.createElement("div");
+                    eventElement.className = "event";
+                    eventElement.innerHTML = `<strong>${evento.NomeCurso},${evento.Sala},${evento.Horario}</strong>`;
+                    dayElement.appendChild(eventElement);
+                });
+
+                calendar.appendChild(dayElement); // Adiciona o dia ao calendário
+            }
+
+            exibirMesAno(); // Atualiza o título com o mês e ano
+        };
+
+        // Atualiza o título do mês e ano
+        const exibirMesAno = () => {
+            const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            document.getElementById('data').textContent = "Calendário de " + meses[currentMonth] + " de " + currentYear;
+        };
+
+        // Controle de navegação entre meses
+        const nextMonth = () => {
+            currentMonth = (currentMonth === 11) ? 0 : currentMonth + 1;
+            currentYear += (currentMonth === 0) ? 1 : 0;
+            generateCalendar();
+        };
+
+        const prevMonth = () => {
+            currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+            currentYear -= (currentMonth === 11) ? 1 : 0;
+            generateCalendar();
+        };
+
+        document.getElementById('nextMonth').addEventListener('click', nextMonth);
+        document.getElementById('prevMonth').addEventListener('click', prevMonth);
+
+        // Gera o calendário na inicialização
+        generateCalendar();
+    });
+
+
+    </script>
+</body>
+</html>
