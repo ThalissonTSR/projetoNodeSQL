@@ -127,7 +127,8 @@ app.get("/editar/:id", (req, res) => {
         .then((curso) => {
             if (curso) {
                 res.render("editar", { 
-                    Curso: curso, // Passa os dados do curso para o template
+                  
+                   Curso: curso, // Passa os dados do curso para o template
                     errorMessage: null
                 });
             } else {

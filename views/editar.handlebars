@@ -1,21 +1,20 @@
+<link rel="stylesheet" href="/css/editar.css" />
+
 <section class="form-section">
-    <h2>Editar Cronograma</h2>
+  <h2>Editar Cronograma</h2>
 
-    <!-- Exibe a mensagem de erro, se houver -->
-    {{#if errorMessage}}
-        <div class="error-message">{{errorMessage}}</div>
-    {{/if}}
+  <!-- Exibe a mensagem de erro, se houver -->
+  {{#if errorMessage}}
+    <div class="error-message">{{errorMessage}}</div>
+  {{/if}}
 
-    <!-- Formulário de Edição -->
-    <form action="/editar/{{Curso.id}}" method="post">
-        <!-- Corrige os valores para pegar as propriedades corretas de 'Curso' -->
-        <input type="text" value="{{Curso.NomeCurso}}" name="NomeCurso" />
-        <input type="text" value="{{Curso.Sala}}" name="Sala" />
+  <!-- Formulário de Edição -->
+  <form action="/editar/{{Curso.id}}" method="post">
+    <!-- Corrige os valores para pegar as propriedades corretas de 'Curso' -->
+    <input type="text" value="{{Curso.NomeCurso}}" name="NomeCurso" />
+    <input type="text" value="{{Curso.Sala}}" name="Sala" />
     <input type="date" value="{{formatDate Curso.Data}}" name="Data" />
-
-
-
-        <input type="time" value="{{Curso.Horario}}" name="Horario" />
-        <button type="submit">Editar</button>
-    </form>
+    <input type="time" value="{{Curso.Horario}}" name="Horario" />
+    <button type="submit">Editar</button>
+  </form>
 </section>

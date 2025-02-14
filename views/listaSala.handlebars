@@ -48,9 +48,13 @@
     {{!bloco numHora}}
     <p>{{Horario}}</p>
 
+    {{!botao de editar}}
+    <a class="btnEdit" href="/editar/{{id}}"><button>Editar</button></a>
+
     {{!botao de deletar}}
     <a class="btbDel" href="/deletar/{{id}}"><button>Deletar</button></a>
     {{!deleta o post dependendo do id, como cria um botao para cada post logo botao1 == id1}}
+
 
   </div>
 {{/each}}
@@ -59,3 +63,4 @@
 <a class="btnNew" href="/cad"><button>CRIAR MARCAÇÃO</button></a>
 
 <a class="btnCal" href="/eventos"><button>Ver Calendario</button></a>
+
