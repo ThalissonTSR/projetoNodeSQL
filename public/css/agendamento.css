@@ -95,10 +95,8 @@ ul li {
 }
 
 p{
-   display: inline;
-   margin-left: 150px ;
-   background: #45a049;
-   
+   text-align: center;
+
 }
 
 a{
