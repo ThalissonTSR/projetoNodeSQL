@@ -7,18 +7,27 @@ const Curso = require("./models/CreateDB");
 const moment = require('moment'); // Adicionando moment.js
 
 // Configuração do Handlebars
-app.use(express.static("public"));
+app.use(express.static("public")); // Serve arquivos estáticos da pasta 'public'
+
+
 app.engine("handlebars", handlebars.engine({
     defaultLayout: "main",
     runtimeOptions: {
         allowProtoPropertiesByDefault: true
+    },
+    helpers: {
+        formatDate: (date) => {
+            // Verifica se a data está definida antes de formatar
+            return date ? moment(date).format('YYYY-MM-DD') : '';
+        }
     }
 }));
-app.set("view engine", "handlebars");
-
 // Configuração do Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.set("view engine", "handlebars"); // Definindo o motor de templates
+
 
 // Rota para página inicial
 app.get("/", (req, res) => {
@@ -27,25 +36,25 @@ app.get("/", (req, res) => {
             res.render("home", { Curso, style: "home.css" });
         });
 });
-    
+
 // Rota para listagem por ordem de cursos
-app.get("/listaCurso", (req,res) =>{ 
+app.get("/listaCurso", (req, res) => { 
     Curso.findAll({ order: [["NomeCurso", "ASC"]] })
     .then((Curso) => {
         res.render("listaCurso", { Curso, style: "home.css" });
     });
 });
-  
+
 // Rota para listagem por ordem de salas
-app.get("/listaSala", (req,res) =>{ 
+app.get("/listaSala", (req, res) => { 
     Curso.findAll({ order: [["Sala", "ASC"]] })
     .then((Curso) => {
         res.render("listaCurso", { Curso, style: "home.css" });
     });
 });
-  
+
 // Rota para listagem por ordem de datas
-app.get("/listaData", (req,res) =>{ 
+app.get("/listaData", (req, res) => { 
     Curso.findAll({ order: [["Data", "DESC"]] })
     .then((Curso) => {
         res.render("listaCurso", { Curso, style: "home.css" });
@@ -56,78 +65,50 @@ app.get("/listaData", (req,res) =>{
 app.get("/cad", (req, res) => {
     res.render("agendamento", { style: "agendamento.css" });
 });
+
+// Rota POST para adicionar um novo curso
 app.post("/add", (req, res) => {
     const verificaData = req.body.Data;  // A data vem no corpo da requisição (req.body)
-    const verificaCurso = req.body.NomeCurso ;
+    const verificaCurso = req.body.NomeCurso;
 
-    // Verifica se a data foi fornecida
     if (!verificaData) {
         return res.status(400).json({ error: "Data não fornecida!" });
     }
 
-    // Usando moment.js para formatar a data recebida e comparar apenas o dia
-    const dataFormatada = moment(verificaData).startOf('day').format('YYYY-MM-DD');
+    // Usando moment.js para formatar a data para YYYY-MM-DD
+    const dataFormatada = moment(verificaData).format('YYYY-MM-DD');  // Usando o formato correto
 
+    Curso.findAll().then((cursos) => {
+        for (let i = 0; i < cursos.length; i++) {
+            const cursoData = moment(cursos[i].Data).format('YYYY-MM-DD'); // Comparando com formato correto
+            const cursoNome = cursos[i].NomeCurso;
 
-
-
-    Curso.findAll()
-        .then((cursos) => {
-            // Percorre os cursos e compara as datas formatadas
-            for (let i = 0; i < cursos.length; i++) {
-                const cursoData = moment(cursos[i].Data).startOf('day').format('YYYY-MM-DD'); // Formata a data do banco de dados
-                const cursoNome = (cursos[i].NomeCurso)
-
-                // Compara a data fornecida com a data do curso
-                if (verificaData === cursoData && verificaCurso === cursoNome) {
-                    // Se encontrar uma data igual, envia uma resposta de erro sem redirecionar
-                    return res.render("agendamento", {
-                        errorMessage: "Data já preenchida por este curso, escolha outra data ou outro curso.",
-                        style: "agendamento.css"
-                    });
-                }
+            if (dataFormatada === cursoData && verificaCurso === cursoNome) {
+                return res.render("agendamento", {
+                    errorMessage: "Data já preenchida por este curso, escolha outra data ou outro curso.",
+                    style: "agendamento.css"
+                });
             }
+        }
 
-            // Se não encontrar nenhuma data igual, cria o curso
-            Curso.create({
-                NomeCurso: req.body.NomeCurso,
-                Sala: req.body.Sala,
-                Data: req.body.Data,
-                Horario: req.body.Horario
-            }).then(() => {
-                // Redireciona para a página de eventos ou para a página de sucesso
-                res.redirect("/eventos");
-            }).catch((err) => {
-                console.error("Erro ao criar o curso:", err);
-                res.status(500).json({ error: "Erro ao criar o curso." });
-            });
-        })
-        .catch((err) => {
-            console.error("Erro ao consultar os cursos:", err);
-            res.status(500).json({ error: "Erro ao consultar os cursos." });
+        // Criar o curso com a data formatada corretamente
+        Curso.create({
+            NomeCurso: req.body.NomeCurso,
+            Sala: req.body.Sala,
+            Data: moment(dataFormatada).toDate(), // Passa a data já formatada
+            Horario: req.body.Horario
+        }).then(() => {
+            res.redirect("/eventos");
+        }).catch((err) => {
+            console.error("Erro ao criar o curso:", err);
+            res.status(500).json({ error: "Erro ao criar o curso." });
         });
-});
-
-
-
-// Rota para adicionar um evento ao banco de dados
-app.post("/add", (req, res) => {
-    const { NomeCurso, Sala, Data, Horario } = req.body;
-
-    // Usando Moment.js para formatar a data sem fuso horário
-    let dataSemFuso = moment(Data).startOf('day').toDate(); // Zera a hora para evitar mudanças de fuso horário
-
-    Curso.create({
-        NomeCurso: NomeCurso,
-        Sala: Sala,
-        Data: dataSemFuso,
-        Horario: Horario
-    }).then(() => {
-        res.redirect("/eventos");
-    }).catch((erro) => {
-        res.send("Houve um erro: " + erro);
+    }).catch((err) => {
+        console.error("Erro ao consultar os cursos:", err);
+        res.status(500).json({ error: "Erro ao consultar os cursos." });
     });
 });
+
 
 // Rota para deletar um evento
 app.get("/deletar/:id", (req, res) => {
@@ -140,16 +121,65 @@ app.get("/deletar/:id", (req, res) => {
         }); 
 });
 
+// Rota GET para exibir o formulário de edição
+app.get("/editar/:id", (req, res) => {
+    Curso.findOne({ where: { "id": req.params.id } })
+        .then((curso) => {
+            if (curso) {
+                res.render("editar", { 
+                    Curso: curso, // Passa os dados do curso para o template
+                    errorMessage: null
+                });
+            } else {
+                res.render("editar", {
+                    errorMessage: "Curso não encontrado."
+                });
+            }
+        })
+        .catch((erro) => {
+            res.render("editar", {
+                errorMessage: "Erro: " + erro
+            });
+        });
+});
+
+// Rota POST para atualizar os dados do curso
+app.post("/editar/:id", (req, res) => {
+    const { NomeCurso, Sala, Data, Horario } = req.body;
+
+    // Garantir que a data seja formatada corretamente
+    const dataFormatada = moment(Data).format('YYYY-MM-DD');
+
+    Curso.update(
+        {
+            NomeCurso: NomeCurso,
+            Sala: Sala,
+            Data: moment(dataFormatada).toDate(),  // Formatar a data para o formato correto
+            Horario: Horario
+        },
+        {
+            where: { id: req.params.id }
+        }
+    )
+    .then(() => {
+        res.redirect("/"); // Redireciona após a edição
+    })
+    .catch((erro) => {
+        res.send("Erro ao atualizar o curso: " + erro);
+    });
+});
+
+// Rota GET para exibir os eventos
 app.get("/eventos", (req, res) => {
     Curso.findAll().then((eventos) => {
         // Formatar os eventos para passar ao frontend
         const eventosFormatados = eventos.map(evento => ({
-            NomeCurso: "Curso: " +  evento.NomeCurso,
+            NomeCurso: "Curso: " + evento.NomeCurso,
             Sala: "<br/>" + " Sala: " + evento.Sala,
             Horario: "<br/>" + "   Horario: " + evento.Horario,
-            createdAt: moment(evento.Data).format('DD/MM/YYYY') // Formatando a data com Moment.js para evitar problemas de fuso horário
+            createdAt: moment(evento.Data).format('YYYY-MM-DD') // Mudança: Formato ISO 8601
         }));
-
+        
         // Renderiza a página do calendário e passa os eventos formatados
         res.render("calendario", {
             eventos: JSON.stringify(eventosFormatados),  // Passa os eventos como JSON
@@ -159,6 +189,7 @@ app.get("/eventos", (req, res) => {
         res.status(500).json({ error: "Erro ao buscar eventos: " + erro });
     });
 });
+
 
 // Iniciando o servidor
 app.listen(8081, () => {

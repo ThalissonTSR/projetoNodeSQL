@@ -29,10 +29,14 @@ h1{
     left: 5%;
 }
 
-.btbDel{
+.btbDel, .btnEdit{
     position: absolute;
     margin: 3%  0 0 95%;
+}
+
+.btnEdit{
     
+    margin: 1%  0 0 95%;
 }
 
 .btnCal{
