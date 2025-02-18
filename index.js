@@ -147,28 +147,61 @@ app.get("/editar/:id", (req, res) => {
 // Rota POST para atualizar os dados do curso
 app.post("/editar/:id", (req, res) => {
     const { NomeCurso, Sala, Data, Horario } = req.body;
+    const verificaData = req.body.Data;
+    const verificaCurso = req.body.NomeCurso;
 
-    // Garantir que a data seja formatada corretamente
-    const dataFormatada = moment(Data).format('YYYY-MM-DD');
+    if (!verificaData) {
+        return res.status(400).json({ error: "Data não fornecida!" });
+    }
 
-    Curso.update(
-        {
-            NomeCurso: NomeCurso,
-            Sala: Sala,
-            Data: moment(dataFormatada).toDate(),  // Formatar a data para o formato correto
-            Horario: Horario
-        },
-        {
-            where: { id: req.params.id }
+    const dataFormatada = moment(verificaData).format('YYYY-MM-DD');
+
+    Curso.findAll().then((cursos) => {
+        let dataConflito = false;
+        for (let i = 0; i < cursos.length; i++) {
+            const cursoData = moment(cursos[i].Data).format('YYYY-MM-DD');
+            const cursoNome = cursos[i].NomeCurso;
+
+            if (dataFormatada === cursoData && verificaCurso === cursoNome) {
+                dataConflito = true;
+                break;
+            }
         }
-    )
-    .then(() => {
-        res.redirect("/"); // Redireciona após a edição
-    })
-    .catch((erro) => {
-        res.send("Erro ao atualizar o curso: " + erro);
+
+        if (dataConflito) {
+            // Renderiza novamente a página de edição com a mensagem de erro
+            return res.render("editar", {
+                errorMessage: "Data já preenchida por este curso, escolha outra data ou outro curso.",
+                Curso: req.body // Passa os dados para o formulário
+            });
+        }
+
+        // Atualiza o curso
+        Curso.update(
+            {
+                NomeCurso: NomeCurso,
+                Sala: Sala,
+                Data: moment(dataFormatada).toDate(),
+                Horario: Horario
+            },
+            {
+                where: { id: req.params.id }
+            }
+        )
+        .then(() => {
+            // Após a edição bem-sucedida, redireciona para a página principal
+            res.redirect("/");
+        })
+        .catch((erro) => {
+            res.send("Erro ao atualizar o curso: " + erro);
+        });
+    }).catch((erro) => {
+        res.status(500).send("Erro ao buscar cursos: " + erro);
     });
 });
+
+  
+   
 
 // Rota GET para exibir os eventos
 app.get("/eventos", (req, res) => {
