@@ -2,18 +2,22 @@
 
 const db = require("./db")     // puxando o modulo de conectar no banco de dados
 
-const Curso = db.sequelize.define("diascurso",{
+const Curso = db.sequelize.define("curso",{
     NomeCurso:{
-        type: db.Sequelize.STRING
+        type: db.Sequelize.STRING,
+        allowNull: false
     },
     Sala:{
-        type: db.Sequelize.TEXT
+        type: db.Sequelize.TEXT,
+        allowNull: false
     },
     Data:{
-        type: db.Sequelize.DATE
+        type: db.Sequelize.DATE,
+        allowNull: false
     },
     Horario: {
-        type: db.Sequelize.STRING
+        type: db.Sequelize.STRING,
+        allowNull: false
     }
 })
 

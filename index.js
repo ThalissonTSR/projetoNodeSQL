@@ -5,6 +5,7 @@ const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const Curso = require("./models/CreateDB");
 const moment = require('moment'); // Adicionando moment.js
+const PORT = process.env.PORT || 8081;
 
 // Configuração do Handlebars
 app.use(express.static("public")); // Serve arquivos estáticos da pasta 'public'
@@ -226,6 +227,6 @@ app.get("/eventos", (req, res) => {
 
 
 // Iniciando o servidor
-app.listen(8081, () => {
-    console.log("Servidor rodando em http://localhost:8081");
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
