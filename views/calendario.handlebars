@@ -49,16 +49,19 @@
                 dayElement.appendChild(dayTitle);
 
                 // Filtra eventos para este dia
-              const formatarDataParaBR = (data) => {
+             const formatarDataParaBR = (data) => {
     const [ano, mes, dia] = data.split('-');
-    return `${ano}-${mes}-${dia}`;  // Agora retorna no formato 'YYYY-MM-DD' para comparação
+    return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;  // Retorna no formato 'YYYY-MM-DD' para comparação
 };
 
 // Verifique se a data foi formatada corretamente no console
 console.log(formatarDataParaBR("2025-02-14"));  // Exemplo de saída: "2025-02-14"
 
-
-               const dayEvents = eventos.filter(evento => evento.createdAt === date);
+const dayEvents = eventos.filter(evento => {
+    const eventoData = formatarDataParaBR(evento.createdAt); // Formata a data para 'YYYY-MM-DD'
+    const currentDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; // Formata a data do dia
+    return eventoData === currentDate; // Compara apenas a parte da data
+});
 
 
                 // Exibir eventos no calendário
