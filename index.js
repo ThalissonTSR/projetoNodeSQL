@@ -70,6 +70,9 @@ app.get("/cad", (req, res) => {
 });
 
 // Rota POST para adicionar um novo curso
+const moment = require('moment-timezone');
+
+// Rota POST para adicionar um novo curso
 app.post("/add", (req, res) => {
     const verificaData = req.body.Data;  // A data vem no corpo da requisição (req.body)
     const verificaCurso = req.body.NomeCurso;
@@ -78,12 +81,12 @@ app.post("/add", (req, res) => {
         return res.status(400).json({ error: "Data não fornecida!" });
     }
 
-    // Usando moment.js para formatar a data para YYYY-MM-DD
-    const dataFormatada = moment(verificaData).format('YYYY-MM-DD');  // Usando o formato correto
+    // Usando moment.js para formatar a data para o fuso horário correto
+    const dataFormatada = moment.tz(verificaData, 'America/Sao_Paulo').utc().format('YYYY-MM-DD HH:mm:ss');  // Convertendo para UTC antes de armazenar
 
     Curso.findAll().then((cursos) => {
         for (let i = 0; i < cursos.length; i++) {
-            const cursoData = moment(cursos[i].Data).format('YYYY-MM-DD'); // Comparando com formato correto
+            const cursoData = moment.utc(cursos[i].Data).format('YYYY-MM-DD'); // Comparando com formato correto
             const cursoNome = cursos[i].NomeCurso;
 
             if (dataFormatada === cursoData && verificaCurso === cursoNome) {
@@ -98,7 +101,7 @@ app.post("/add", (req, res) => {
         Curso.create({
             NomeCurso: req.body.NomeCurso,
             Sala: req.body.Sala,
-           Data: moment.utc(dataFormatada, 'YYYY-MM-DD').toDate(),
+            Data: moment.utc(dataFormatada).toDate(), // Passando a data para UTC antes de armazenar
             Horario: req.body.Horario
         }).then(() => {
             res.redirect("/eventos");
@@ -214,12 +217,12 @@ app.get("/eventos", (req, res) => {
             NomeCurso: "Curso: " + evento.NomeCurso,
             Sala: "<br/>" + " Sala: " + evento.Sala,
             Horario: "<br/>" + "   Horario: " + evento.Horario,
-            createdAt: moment.utc(evento.Data).tz('America/Sao_Paulo').format('YYYY-MM-DD') // Mudança: Formato ISO 8601
+            createdAt: moment.utc(evento.Data).tz('America/Sao_Paulo').format('YYYY-MM-DD') // Convertendo para o fuso horário de SP antes de exibir
         }));
-        
+
         // Renderiza a página do calendário e passa os eventos formatados
         res.render("calendario", {
-            eventos: JSON.stringify(eventosFormatados),  // Passa os eventos como JSON
+            eventos: JSON.stringify(eventosFormatados),
             style: "calendario.css"
         });
     }).catch((erro) => {
