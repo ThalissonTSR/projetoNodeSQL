@@ -11,10 +11,11 @@ const Curso = db.sequelize.define("curso",{
         type: db.Sequelize.TEXT,
         allowNull: false
     },
-    Data:{
-        type: db.Sequelize.DATE,
-        allowNull: false
-    },
+    Data: {
+  type: db.Sequelize.DATEONLY,
+  allowNull: false
+}
+,
     Horario: {
         type: db.Sequelize.STRING,
         allowNull: false
