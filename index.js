@@ -4,7 +4,6 @@ const app = express();
 const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const Curso = require("./models/CreateDB");
-
 const PORT = process.env.PORT || 8081;
 const moment = require('moment-timezone');
 
@@ -70,7 +69,7 @@ app.get("/cad", (req, res) => {
 });
 
 // Rota POST para adicionar um novo curso
-const moment = require('moment-timezone');
+
 
 // Rota POST para adicionar um novo curso
 app.post("/add", (req, res) => {
