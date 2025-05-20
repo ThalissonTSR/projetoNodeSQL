@@ -188,7 +188,7 @@ app.post("/editar/:id", (req, res) => {
         if (dataConflito) {
             // Renderiza novamente a página de edição com a mensagem de erro
             return res.render("editar", {
-                errorMessage: "Data já preenchida por este curso, escolha outra data ou outro curso.",
+                errorMessage: "                     Data já preenchida por este curso, escolha outra data ou outro curso.",
                 Curso: req.body // Passa os dados para o formulário
             });
         }
