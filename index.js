@@ -81,8 +81,8 @@ app.post("/add", (req, res) => {
         return res.status(400).json({ error: "Data não fornecida!" });
     }
 
-    // Usando moment.js para formatar a data para o fuso horário correto
-    const dataFormatada = moment.tz(`${verificaData} ${req.body.Horario}`, 'America/Sao_Paulo').utc().format('YYYY-MM-DD HH:mm:ss');  // Convertendo para UTC antes de armazenar
+    // Usando moment.js para formatar a data para o fuso horário correto e adicionar 1 dia
+    const dataFormatada = moment.tz(`${verificaData} ${req.body.Horario}`, 'America/Sao_Paulo').add(1, 'days').format('YYYY-MM-DD HH:mm:ss');  // Adiciona 1 dia e mantém no fuso horário de SP
 
     Curso.findAll().then((cursos) => {
         for (let i = 0; i < cursos.length; i++) {
@@ -101,7 +101,7 @@ app.post("/add", (req, res) => {
         Curso.create({
             NomeCurso: req.body.NomeCurso,
             Sala: req.body.Sala,
-            Data: moment.utc(dataFormatada).toDate(), // Passando a data para UTC antes de armazenar
+            Data: moment(dataFormatada).toDate(), // Utilizando a data formatada com +1 dia para armazenar localmente
             Horario: req.body.Horario
         }).then(() => {
             res.redirect("/eventos");
@@ -114,6 +114,7 @@ app.post("/add", (req, res) => {
         res.status(500).json({ error: "Erro ao consultar os cursos." });
     });
 });
+
 
 
 
@@ -162,7 +163,8 @@ app.post("/editar/:id", (req, res) => {
         return res.status(400).json({ error: "Data não fornecida!" });
     }
 
-    const dataFormatada = moment(verificaData).format('YYYY-MM-DD');
+    // Formata a data considerando o fuso horário e adiciona 1 dia
+    const dataFormatada = moment.tz(verificaData, 'America/Sao_Paulo').add(1, 'days').format('YYYY-MM-DD');  // Adiciona 1 dia e mantém no fuso horário de SP
 
     Curso.findAll().then((cursos) => {
         let dataConflito = false;
@@ -189,7 +191,7 @@ app.post("/editar/:id", (req, res) => {
             {
                 NomeCurso: NomeCurso,
                 Sala: Sala,
-                Data: moment.utc(dataFormatada, 'YYYY-MM-DD').toDate(),
+                Data: moment.tz(dataFormatada, 'America/Sao_Paulo').toDate(), // Adiciona 1 dia e ajusta para o fuso horário correto
                 Horario: Horario
             },
             {
@@ -207,6 +209,7 @@ app.post("/editar/:id", (req, res) => {
         res.status(500).send("Erro ao buscar cursos: " + erro);
     });
 });
+
 
   
    
@@ -231,6 +234,7 @@ app.get("/eventos", (req, res) => {
         res.status(500).json({ error: "Erro ao buscar eventos: " + erro });
     });
 });
+
 
 
 // Iniciando o servidor
