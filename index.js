@@ -4,7 +4,7 @@ const app = express();
 const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const Curso = require("./models/CreateDB");
-const moment = require('moment'); // Adicionando moment.js
+
 const PORT = process.env.PORT || 8081;
 const moment = require('moment-timezone');
 
