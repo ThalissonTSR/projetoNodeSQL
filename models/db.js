@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 
 // Substitua pelos valores reais ou insira as variáveis diretamente
 const sequelize = new Sequelize(
-  'railway',        // Nome do banco de dados
+  'railway',        // Nome do banco de dados 
   'root',     // Usuário do banco de dados
   'FgsYtzAaCwXwkylTytkCPBmTOvjzaCww',       // Senha do banco de dados
   {
@@ -12,7 +12,8 @@ const sequelize = new Sequelize(
     dialectOptions: {
       ssl: {
         require: true,            // Exige SSL
-        rejectUnauthorized: false, // Não rejeitar certificados não verificados
+        rejectUnauthorized: false,// Não rejeitar certificados não verificados
+        timezone: '+00:00' 
       },
     },
   }

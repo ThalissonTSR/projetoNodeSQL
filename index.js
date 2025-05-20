@@ -72,6 +72,7 @@ app.get("/cad", (req, res) => {
 
 
 // Rota POST para adicionar um novo curso
+// Rota POST para adicionar um novo curso
 app.post("/add", (req, res) => {
     const verificaData = req.body.Data;  // A data vem no corpo da requisição (req.body)
     const verificaCurso = req.body.NomeCurso;
@@ -80,9 +81,10 @@ app.post("/add", (req, res) => {
         return res.status(400).json({ error: "Data não fornecida!" });
     }
 
-    // Usando moment.js para formatar a data para o fuso horário correto
-    const dataFormatada = moment.tz(verificaData, 'America/Sao_Paulo').utc().format('YYYY-MM-DD HH:mm:ss');  // Convertendo para UTC antes de armazenar
+    // Usando moment.js para formatar a data para o fuso horário correto de SP, depois convertendo para UTC
+    const dataFormatada = moment.tz(verificaData, 'America/Sao_Paulo').utc().format('YYYY-MM-DD HH:mm:ss');
 
+    // Checando se a data do curso já existe
     Curso.findAll().then((cursos) => {
         for (let i = 0; i < cursos.length; i++) {
             const cursoData = moment.utc(cursos[i].Data).format('YYYY-MM-DD'); // Comparando com formato correto
@@ -96,11 +98,11 @@ app.post("/add", (req, res) => {
             }
         }
 
-        // Criar o curso com a data formatada corretamente
+        // Criar o curso com a data formatada corretamente em UTC
         Curso.create({
             NomeCurso: req.body.NomeCurso,
             Sala: req.body.Sala,
-            Data: moment.utc(dataFormatada).toDate(), // Passando a data para UTC antes de armazenar
+            Data: moment.utc(dataFormatada).toDate(), // Convertendo para UTC
             Horario: req.body.Horario
         }).then(() => {
             res.redirect("/eventos");
@@ -113,6 +115,7 @@ app.post("/add", (req, res) => {
         res.status(500).json({ error: "Erro ao consultar os cursos." });
     });
 });
+
 
 
 // Rota para deletar um evento
