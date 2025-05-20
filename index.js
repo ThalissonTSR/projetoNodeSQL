@@ -20,7 +20,7 @@ app.engine("handlebars", handlebars.engine({
     helpers: {
         formatDate: (date) => {
             // Verifica se a data está definida antes de formatar
-          return date ? moment(date).format('YYYY-MM-DD') : '';
+          return date ? moment(date).subtract(1, 'days').format('YYYY-MM-DD') : '';
         }
     }
 }));
@@ -131,13 +131,18 @@ app.get("/deletar/:id", (req, res) => {
 });
 
 // Rota GET para exibir o formulário de edição
+// Rota GET para exibir o formulário de edição
+// Rota GET para exibir o formulário de edição
 app.get("/editar/:id", (req, res) => {
     Curso.findOne({ where: { "id": req.params.id } })
         .then((curso) => {
             if (curso) {
+                // Subtrai 1 dia da data antes de passá-la para a view
+                curso.Data = moment(curso.Data).subtract(1, 'days').format('YYYY-MM-DD');
+
+                // Passando os dados para o template com a data ajustada
                 res.render("editar", { 
-                  
-                   Curso: curso, // Passa os dados do curso para o template
+                    Curso: curso, // Passa o curso com a data ajustada
                     errorMessage: null
                 });
             } else {
@@ -152,6 +157,8 @@ app.get("/editar/:id", (req, res) => {
             });
         });
 });
+
+
 
 // Rota POST para atualizar os dados do curso
 app.post("/editar/:id", (req, res) => {
