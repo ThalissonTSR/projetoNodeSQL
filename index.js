@@ -138,7 +138,7 @@ app.get("/editar/:id", (req, res) => {
         .then((curso) => {
             if (curso) {
                 // Subtrai 1 dia da data antes de passá-la para a view
-                curso.Data = moment(curso.Data).subtract(1, 'days').format('YYYY-MM-DD');
+                curso.Data = moment(curso.Data).subtract(0, 'days').format('YYYY-MM-DD');
 
                 // Passando os dados para o template com a data ajustada
                 res.render("editar", { 
