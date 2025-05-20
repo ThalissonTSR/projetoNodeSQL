@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const Curso = require("./models/CreateDB");
 const moment = require('moment'); // Adicionando moment.js
 const PORT = process.env.PORT || 8081;
+const moment = require('moment-timezone');
+
 
 // Configuração do Handlebars
 app.use(express.static("public")); // Serve arquivos estáticos da pasta 'public'
@@ -19,7 +21,7 @@ app.engine("handlebars", handlebars.engine({
     helpers: {
         formatDate: (date) => {
             // Verifica se a data está definida antes de formatar
-            return date ? moment(date).format('YYYY-MM-DD') : '';
+          return date ? moment.utc(date).tz('America/Sao_Paulo').format('YYYY-MM-DD') : '';
         }
     }
 }));
@@ -96,7 +98,7 @@ app.post("/add", (req, res) => {
         Curso.create({
             NomeCurso: req.body.NomeCurso,
             Sala: req.body.Sala,
-            Data: moment(dataFormatada).toDate(), // Passa a data já formatada
+           Data: moment.utc(dataFormatada, 'YYYY-MM-DD').toDate(),
             Horario: req.body.Horario
         }).then(() => {
             res.redirect("/eventos");
@@ -182,7 +184,7 @@ app.post("/editar/:id", (req, res) => {
             {
                 NomeCurso: NomeCurso,
                 Sala: Sala,
-                Data: moment(dataFormatada).toDate(),
+                Data: moment.utc(dataFormatada, 'YYYY-MM-DD').toDate(),
                 Horario: Horario
             },
             {
@@ -212,7 +214,7 @@ app.get("/eventos", (req, res) => {
             NomeCurso: "Curso: " + evento.NomeCurso,
             Sala: "<br/>" + " Sala: " + evento.Sala,
             Horario: "<br/>" + "   Horario: " + evento.Horario,
-            createdAt: moment(evento.Data).format('YYYY-MM-DD') // Mudança: Formato ISO 8601
+            createdAt: moment.utc(evento.Data).tz('America/Sao_Paulo').format('YYYY-MM-DD') // Mudança: Formato ISO 8601
         }));
         
         // Renderiza a página do calendário e passa os eventos formatados
